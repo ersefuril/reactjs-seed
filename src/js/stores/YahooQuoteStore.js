@@ -24,16 +24,19 @@ class YahooQuoteStore extends ListenableStore {
         this.quotes = defaultQuotes;
         this.lastUpdateAt = Moment(aLongTimeAgo, YahooDateTimePattern);
 
-        this.listenTo( YahooQuoteActions.refreshQuotes, this.refreshQuotes );
-        this.listenTo( YahooQuoteActions.refreshQuote, this.refreshQuote );
+        //this.listenToMany( YahooQuoteActions );
+
+        this.listenTo( YahooQuoteActions.refreshQuotes  , this.refreshQuotes );
+        this.listenTo( YahooQuoteActions.refreshQuote   , this.refreshQuote );
         this.listenTo( YahooQuoteActions.getQuotes.completed, this.getQuotesCompleted );
-        this.listenTo( YahooQuoteActions.getQuotes.failed, this.getQuotesFailed );
-        this.listenTo( YahooQuoteActions.addQuoteSymbols, this.addQuoteSymbols );
-        this.listenTo( YahooQuoteActions.removeQuoteSymbols, this.removeQuoteSymbols );
+        this.listenTo( YahooQuoteActions.getQuotes.failed   , this.getQuotesFailed );
+        this.listenTo( YahooQuoteActions.addQuoteSymbols    , this.addQuoteSymbols );
+        this.listenTo( YahooQuoteActions.removeQuoteSymbols , this.removeQuoteSymbols );
     }
 
     /**
      * Anytone listening to the store will get this value
+     * @override
      */
     get value() {
         return this.quotes;
@@ -116,5 +119,14 @@ class YahooQuoteStore extends ListenableStore {
         this.trigger();
     }
 };
+
+class Foo {
+    bar() {
+
+    }
+}
+
+var f = new Foo();
+console.log( Object.getOwnPropertyNames( f ) );
 
 module.exports = new YahooQuoteStore();
