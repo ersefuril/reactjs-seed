@@ -15,7 +15,7 @@ class FluxComponent extends React.Component {
 
         for( var key in this.stores ) {
             let store = this.stores[key];
-            this.state[key] = _.isFunction( store.value ) ? store.value() : void 0;
+            this.state[key] = store.value;
         }
     }
 

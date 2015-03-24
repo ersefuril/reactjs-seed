@@ -1,38 +1,38 @@
-var React = require("react/addons"),
-    Reflux = require("reflux"),
-    DefaultLoadingContent = require("./DefaultLoader");
+var React = require("react/addons");
+var fluo = require('fluo');
+var { ListenableStore } = require('./flux');
+var DefaultLoadingContent = require("./DefaultLoader");
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
-var OnReadyActions = Reflux.createActions([
-    "updateStatus"
-]);
+var OnReadyActions = {
+    updateStatus: fluo.createAction()
+};
 
-var OnReadyStore = Reflux.createStore({
-    listenables: OnReadyActions,
-
+class OnReadyStore extends ListenableStore {
     init() {
         this.isReady = false;
-    },
+        this.listenTo( OnReadyActions.updateStatus, this.updateStatus );
+    }
 
-    value() {
+    get value() {
         return this.isReady;
-    },
+    }
 
-    onUpdateStatus(isReady) {
+    updateStatus( isReady ) {
         this.isReady = isReady;
 
         if( isReady ) {
-            setTimeout( () => this.trigger( this.value() ), 500 );
+            setTimeout( () => this.trigger(), 500 );
         }
         else {
             this.trigger(this.isReady);
         }
     }
-});
+};
 
 
 module.exports = {
     OnReadyActions: OnReadyActions,
-    OnReadyStore  : OnReadyStore
+    OnReadyStore  : new OnReadyStore()
 };

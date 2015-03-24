@@ -1,4 +1,4 @@
-var Reflux      = require( 'reflux' );
+var fluo        = require( 'fluo' );
 var AuthApi     = require( './AuthApi' );
 
 
@@ -10,19 +10,19 @@ var AuthActions = {
      * @param  {String} username
      * @param  {String} password
      */
-    login         : Reflux.createAction( { asyncResult: true } ),
+    login         : fluo.createAction( { asyncResult: true } ),
 
     /**
      * Logout
      * @async
      */
-    logout        : Reflux.createAction( { asyncResult: true } ),
+    logout        : fluo.createAction( { asyncResult: true } ),
 
     /**
      * Returns the user to the login screen
      * @async
      */
-    requiresLogin : Reflux.createAction()
+    requiresLogin : fluo.createAction()
 };
 
 

@@ -29,7 +29,7 @@ gulp.task('config', function(cb){
         {file:'jquery'},
         {file:'lodash'},
         {file:'moment'},
-        {file:'reflux'},
+        {file:'fluo'},
         {file:'validator'},
         {file:'immutable'},
         {file:'classnames'},

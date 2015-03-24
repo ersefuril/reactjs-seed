@@ -1,5 +1,5 @@
 var _                   = require( 'lodash' );
-var Reflux              = require('reflux');
+var { ListenableStore } = require( '../utils/flux' );
 var Immutable           = require('immutable');
 var Moment              = require('moment');
 var YahooQuoteActions   = require('./YahooQuoteActions');
@@ -15,7 +15,11 @@ const defaultQuotes = Immutable.Map({
     MSFT: {}
 });
 
-var YahooQuoteStore = Reflux.createStore({
+
+/**
+ * A sample Flux store, that any component can listen to
+ */
+class YahooQuoteStore extends ListenableStore {
     init() {
         this.quotes = defaultQuotes;
         this.lastUpdateAt = Moment(aLongTimeAgo, YahooDateTimePattern);
@@ -26,33 +30,33 @@ var YahooQuoteStore = Reflux.createStore({
         this.listenTo( YahooQuoteActions.getQuotes.failed, this.getQuotesFailed );
         this.listenTo( YahooQuoteActions.addQuoteSymbols, this.addQuoteSymbols );
         this.listenTo( YahooQuoteActions.removeQuoteSymbols, this.removeQuoteSymbols );
-    },
+    }
 
     /**
-     * This should return the same value as every trigger
+     * Anytone listening to the store will get this value
      */
-    value() {
+    get value() {
         return this.quotes;
-    },
+    }
 
 
     refreshQuotes() {
         var currentQuotes = this.quotes;
         this.quotes = currentQuotes.clear();
-        this.trigger( this.value() );
+        this.trigger();
 
         var quotesSymbols = currentQuotes.keySeq().toArray();
         if(quotesSymbols.length > 0) {
             YahooQuoteActions.getQuotes(quotesSymbols);
         } else {
             this.lastUpdateAt = Moment();
-            this.trigger( this.value() );
+            this.trigger();
         }
-    },
+    }
 
     refreshQuote(symbol) {
         YahooQuoteActions.getQuotes([symbol]);
-    },
+    }
 
     getQuotesCompleted(apiResponse) {
         /*
@@ -84,13 +88,13 @@ var YahooQuoteStore = Reflux.createStore({
             }
 
             this.lastUpdateAt = Moment(apiResponse.query.created, YahooDateTimePattern);
-            this.trigger(this.value());
+            this.trigger();
         }
-    },
+    }
 
     getQuotesFailed(someError) {
         console.log("something went wrong with quotes api. Error:", someError);
-    },
+    }
 
     addQuoteSymbols(symbols) {
         this.quotes = this.quotes.withMutations( (currentQuotes) => {
@@ -101,7 +105,7 @@ var YahooQuoteStore = Reflux.createStore({
             });
         });
         YahooQuoteActions.getQuotes(symbols);
-    },
+    }
 
     removeQuoteSymbols(symbols) {
         this.quotes = this.quotes.withMutations( (currentQuotes) => {
@@ -109,9 +113,8 @@ var YahooQuoteStore = Reflux.createStore({
                 currentQuotes.delete(symbol);
             });
         });
-        this.trigger(this.value());
+        this.trigger();
     }
+};
 
-});
-
-module.exports = YahooQuoteStore;
+module.exports = new YahooQuoteStore();
